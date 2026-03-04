@@ -142,7 +142,7 @@ class TimedFeatured_Admin {
     }
 
     // Save product field in general tab
-    public function save_product_field( $product ) {
+public function save_product_field( $product ) {
 
         // Values post form
         $days_post  = isset( $_POST['_featured_days'] ) ? $_POST['_featured_days'] : ''; 
@@ -151,30 +151,38 @@ class TimedFeatured_Admin {
         // Values in DDBB
         $current_meta_days = $product->get_meta( '_featured_days' );
         $had_days_assigned = ( '' !== $current_meta_days );
-
-        // Manual featured check = clean all
-        if ( ! $is_checked ) {
-            $product->delete_meta_data( '_featured_days' );
-            $product->set_featured( false );
-        } 
         
-        // Featured checked but featured days field empty
-        elseif ( '' === $days_post ) {
-            
-            if ( $had_days_assigned ) {
+        // 1 - If days field IS NOT empty
+        if ( '' !== $days_post ) {
+            $new_days = absint( $days_post );
+
+            if ( ! $is_checked && $had_days_assigned && $new_days === absint( $current_meta_days ) ) {
+                
+                // User have unchecked native check manually
                 $product->delete_meta_data( '_featured_days' );
                 $product->set_featured( false );
+
             } else {
-                $global_default = get_option( 'timedfeatured_time', 0 );
-                $product->update_meta_data( '_featured_days', absint( $global_default ) );
+                // New number means to be featured allways
+                $product->update_meta_data( '_featured_days', $new_days );
                 $product->set_featured( true );
             }
         } 
-        
-        // Featured checked but featured days field NOT empty
+        // 2 - If days field IS empty
         else {
-            $product->update_meta_data( '_featured_days', absint( $days_post ) );
-            $product->set_featured( true );
+            
+            // User have checked native check manually
+            if ( $is_checked && ! $had_days_assigned ) {
+                
+                $global_default = get_option( 'timedfeatured_time', 0 );
+                $product->update_meta_data( '_featured_days', absint( $global_default ) );
+                $product->set_featured( true );
+
+            } else {
+                // If check is unchecked or user deleted days fiel manually
+                $product->delete_meta_data( '_featured_days' );
+                $product->set_featured( false );
+            }
         }
 
         // --- NOTE: In this hook, it is NOT necessary to call $product->save() ---
