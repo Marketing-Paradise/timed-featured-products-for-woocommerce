@@ -2,9 +2,9 @@
 /**
  * The plugin's administration functionality.
  *
- * @package    Timed_Featured_Products_for_Woocommerce
- * @subpackage Timed_Featured_Products_for_Woocommerce/admin
- * @author     Marketing Paradise <rafael@mkparadise.com>
+ * @package     Timed_Featured_Products_for_Woocommerce
+ * @subpackage  Timed_Featured_Products_for_Woocommerce/admin
+ * @author      Marketing Paradise <rafael@mkparadise.com>
  */
 
 if (!defined('ABSPATH')) {
@@ -17,7 +17,7 @@ class TimedFeatured_Admin {
         add_action('admin_menu', array($this, 'timed_featured_menu')); // Add page to WooCommerce submenu
         add_action('admin_init', array ($this, 'timed_featured_settings')); // We create settings sections, register settings, and create fields.
         add_action( 'woocommerce_product_options_general_product_data', array( $this, 'paint_product_field' ) );// Add product field in general tab
-        add_action( 'woocommerce_process_product_meta', array( $this, 'save_product_field' ) ); // Save product field in general tab
+        add_action( 'woocommerce_admin_process_product_object', array( $this, 'save_product_field' ) ); // Save product field in general tab
         add_filter( 'manage_edit-product_columns', array( $this, 'paint_days_column' ) ); // Add featured days column
         add_action( 'manage_product_posts_custom_column', array( $this, 'render_days_column_content' ), 10, 2 ); // Render value in featured days column
     }
@@ -39,18 +39,18 @@ class TimedFeatured_Admin {
 
     public function timedfeatured_options() {
         ?>
-		    <div class="wrap">
+            <div class="wrap">
                 <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			    <form method="post" action="options.php">
-				    <?php
-                    settings_errors(); // Errors. We do not set “timedfeatured_settings_error” so that all errors are displayed, not just those we configure.
-					settings_fields( 'timedfeatured_settings_group' ); // Name of the settings group
-					do_settings_sections( 'mkp-timed-featured-options' ); // page slug of the options page
-					submit_button(); // Button that saves the options
-				    ?>
-			    </form>
-		    </div>
-	    <?php
+                <form method="post" action="options.php">
+                    <?php
+                    settings_errors(); // Errors. We do not set "timedfeatured_settings_error" so that all errors are displayed, not just those we configure.
+                    settings_fields( 'timedfeatured_settings_group' ); // Name of the settings group
+                    do_settings_sections( 'mkp-timed-featured-options' ); // page slug of the options page
+                    submit_button(); // Button that saves the options
+                    ?>
+                </form>
+            </div>
+        <?php
     }
 
     /**
@@ -59,15 +59,15 @@ class TimedFeatured_Admin {
     public function timed_featured_settings() {
 
         $page_slug = 'mkp-timed-featured-options';
-	    $option_group = 'timedfeatured_settings_group';
+        $option_group = 'timedfeatured_settings_group';
 
         // 1 - We create the section
         add_settings_section(
-	        'timedfeatured-section', // Section ID
-	        esc_html__( 'Options', 'timed-featured-products-for-woocommerce' ), // title (optional)
-	        '', // callback to paint the section (optional)
-	        $page_slug
-	    );
+            'timedfeatured-section', // Section ID
+            esc_html__( 'Options', 'timed-featured-products-for-woocommerce' ), // title (optional)
+            '', // callback to paint the section (optional)
+            $page_slug
+        );
 
         // 2 - We register the fields
         register_setting($option_group, 'timedfeatured_time', array ($this, 'validate_time'));
@@ -128,11 +128,11 @@ class TimedFeatured_Admin {
     public function validate_time ($input) {
         if (!is_numeric($input) || $input < 0) { // Time must be a number greater than zero.
             add_settings_error(
-		    'timedfeatured_settings_error',
-		    'no-float', // part of the error message ID id="setting-error-no-float"
-		    esc_html__('Time is invalid', 'timed-featured-products-for-woocommerce'), // Error message
-		    'error' // error type
-	    );
+            'timedfeatured_settings_error',
+            'no-float', // part of the error message ID id="setting-error-no-float"
+            esc_html__('Time is invalid', 'timed-featured-products-for-woocommerce'), // Error message
+            'error' // error type
+        );
         $input = get_option('timedfeatured_time', 0); // If there is an error, the previous value remains.
     }
 
@@ -141,16 +141,43 @@ class TimedFeatured_Admin {
     }
 
     // Save product field
-    public function save_product_field( $post_id ) {
+    public function save_product_field( $product ) {
 
-        $woocommerce_days_field = isset( $_POST['_featured_days'] ) ? $_POST['_featured_days'] : ''; // Sanitize
+        // Values post form
+        $days_post  = isset( $_POST['_featured_days'] ) ? $_POST['_featured_days'] : ''; 
+        $is_checked = isset( $_POST['_featured'] );
+
+        // Values in DDBB
+        $current_meta_days = $product->get_meta( '_featured_days' );
+        $had_days_assigned = ( '' !== $current_meta_days );
+
+        // Manual featured check = clean all
+        if ( ! $is_checked ) {
+            $product->delete_meta_data( '_featured_days' );
+            $product->set_featured( false );
+        } 
         
-        if ( '' === $woocommerce_days_field ) {
-            delete_post_meta( $post_id, '_featured_days' ); // Empty field means using the global value.
-        } else {
-            $days = absint( $woocommerce_days_field ); // Sanitize
-            update_post_meta( $post_id, '_featured_days', $days );
+        // Featured checked but featured days field empty
+        elseif ( '' === $days_post ) {
+            
+            if ( $had_days_assigned ) {
+                $product->delete_meta_data( '_featured_days' );
+                $product->set_featured( false );
+            } else {
+                $global_default = get_option( 'timedfeatured_time', 0 );
+                $product->update_meta_data( '_featured_days', absint( $global_default ) );
+                $product->set_featured( true );
+            }
+        } 
+        
+        // Featured checked but featured days field NOT empty
+        else {
+            $product->update_meta_data( '_featured_days', absint( $days_post ) );
+            $product->set_featured( true );
         }
+
+        // --- NOTE: In this hook, it is NOT necessary to call $product->save() ---
+        // WooCommerce will automatically call it immediately after this hook.
     }
 
     public function render_days_column_content( $column, $post_id ) {
