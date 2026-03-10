@@ -18,21 +18,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-
-/**
- * When activating the plugin, we check whether WooCommerce is active.
- */
-function timedfeatured_activate_plugin() {
-    if ( ! class_exists( 'WooCommerce' ) ) {
-        deactivate_plugins( plugin_basename( __FILE__ ) );
-        wp_die(
-            esc_html__( 'We are sorry, but the "minimum order" plugin requires WooCommerce to be installed and active. Please activate WooCommerce and try again.', 'timed-featured-products-for-woocommerce' ),
-            esc_html__( 'Activation error', 'timed-featured-products-for-woocommerce' ),
-            array( 'back_link' => true )
-        );
-    }
-}
-register_activation_hook( __FILE__, 'timedfeatured_activate_plugin' );
+register_activation_hook( __FILE__, array( 'TimedFeatured_Admin', 'timedfeatured_activate_plugin' ) );
+register_deactivation_hook( __FILE__, array( 'TimedFeatured_Admin', 'timedfeatured_unschedule_task' ) );
 
 final class TimedFeatured_Principal {
 

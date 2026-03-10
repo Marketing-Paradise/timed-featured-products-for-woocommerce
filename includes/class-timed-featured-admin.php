@@ -14,6 +14,7 @@ if (!defined('ABSPATH')) {
 class TimedFeatured_Admin {
 
     public function __construct() {
+        add_action('check_featured_products', array($this, 'update_featured_products')); // Cron task
         add_action('admin_menu', array($this, 'timed_featured_menu')); // Add page to WooCommerce submenu
         add_action('admin_init', array ($this, 'timed_featured_settings')); // We create settings sections, register settings, and create fields.
         add_action( 'woocommerce_product_options_general_product_data', array( $this, 'paint_product_field' ) );// Add product field in general tab
@@ -22,6 +23,78 @@ class TimedFeatured_Admin {
         add_filter( 'manage_edit-product_columns', array( $this, 'paint_days_column' ) ); // Add featured days column
         add_action( 'manage_product_posts_custom_column', array( $this, 'render_days_column_content' ), 10, 2 ); // Render value in featured days column
         add_action( 'admin_notices', array( $this, 'display_featured_notice' ) ); // Notifications in backend
+    }
+
+    /**
+     * Check if woocommerce is active and shedule task
+     */
+    public static function timedfeatured_activate_plugin() {
+        if ( ! class_exists( 'WooCommerce' ) ) {
+            deactivate_plugins( plugin_basename( __FILE__ ) );
+            wp_die( esc_html__( 'This plugin requires WooCommerce.', 'timed-featured-products-for-woocommerce' ) );
+        }
+
+        // Schedule task
+        self::timedfeatured_schedule_task();
+    }
+
+    /**
+     * Schedule task for featured products.
+     */
+    public static function timedfeatured_schedule_task() {
+        if (!wp_next_scheduled('check_featured_products')) {
+            $midnight = strtotime('tomorrow midnight');
+            wp_schedule_event($midnight, 'daily', 'check_featured_products');
+        }
+    }
+
+    /**
+     * Un-schedule the task for featured products.
+     */
+    public static function timedfeatured_unschedule_task() {
+        $timestamp = wp_next_scheduled('check_featured_products');
+        if ( $timestamp ) {
+            wp_unschedule_event( $timestamp, 'check_featured_products' );
+        }
+    }
+    
+    /**
+     * Update featured products
+     */
+    public function update_featured_products() {
+        $args = array(
+            'post_type'      => 'product',
+            'posts_per_page' => -1,
+            'fields'         => 'ids',
+            'meta_query'     => array(
+                array(
+                    'key'     => '_featured_days',
+                    'value'   => 0,
+                    'compare' => '>',
+                    'type'    => 'NUMERIC'
+                )
+            )
+        );
+        
+        $products = new WP_Query($args);
+        
+        if ($products->have_posts()) {
+            foreach ($products->posts as $product_id) {
+                $producto_wc = wc_get_product( $product_id );
+                if ( ! $producto_wc ) continue;
+                
+                $featured_days = (int) $producto_wc->get_meta( '_featured_days' );
+                $featured_days--;
+
+                $new_days = max(0, $featured_days);
+                $producto_wc->update_meta_data( '_featured_days', $new_days );
+    
+                if ($new_days <= 0) {
+                    $producto_wc->set_featured( false );
+                }
+                $producto_wc->save();
+            }
+        }
     }
 
     /**
