@@ -44,7 +44,7 @@ class Timed_Featured_Admin {
     public static function timedfeatured_schedule_task() {
         if (!wp_next_scheduled('check_featured_products')) {
             $midnight = strtotime('tomorrow midnight');
-            wp_schedule_event($midnight, 'daily', 'check_featured_products');
+            wp_schedule_event($midnight + (3 * HOUR_IN_SECONDS), 'daily', 'check_featured_products');
         }
     }
 
