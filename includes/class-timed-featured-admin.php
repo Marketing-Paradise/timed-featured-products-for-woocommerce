@@ -159,7 +159,7 @@ class Timed_Featured_Admin {
 
     // 4 - We paint the fields
     public function paint_time () {
-        $time = get_option('timedfeatured_time', 0);
+        $time = get_option('timedfeatured_time', 30);
         echo "<input id='mkp-timedfeatured-time' name='timedfeatured_time' type='number' min='0' value='". esc_attr( $time ) ."' />";
         echo '<p class="description">' . esc_html__( 'A time of 0 means that the products will remain featured until you manually remove them.', 'timed-featured-products-for-woocommerce' ) . '</p>';
         echo '<p class="description">' . esc_html__( 'This is a global option. You can override it at product level.', 'timed-featured-products-for-woocommerce' ) . '</p>';
@@ -173,12 +173,12 @@ class Timed_Featured_Admin {
             'label'             => __( 'Featured days', 'timed-featured-products-for-woocommerce' ),
             'placeholder'       => '',
             'desc_tip'          => true,
-            'description'       => __( 'Priority rules:<br>1. <b>Empty - </b> The product is no longer featured.<br>2. <b>Zero - </b> Override global settings: never expires (infinite).<br>3. <b>Number - </b>Override global settings: specific days for this product.', 'timed-featured-products-for-woocommerce' ),
+            'description'       => __( 'Priority rules:<br>1. <b>Empty - </b> The product is no longer featured.<br>2. <b>Number - </b>Override global settings: specific days for this product.', 'timed-featured-products-for-woocommerce' ),
             'type'              => 'number',
             'value'             => $value, 
             'custom_attributes' => array(
                 'step' => '1',
-                'min'  => '0'
+                'min'  => '1'
             )
         );
         echo '<div class="options_group">';
