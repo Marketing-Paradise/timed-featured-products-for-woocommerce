@@ -80,19 +80,20 @@ class Timed_Featured_Admin {
         
         if ($products->have_posts()) {
             foreach ($products->posts as $product_id) {
-                $producto_wc = wc_get_product( $product_id );
-                if ( ! $producto_wc ) continue;
+                $product_wc = wc_get_product( $product_id );
+                if ( ! $product_wc ) continue;
                 
-                $featured_days = (int) $producto_wc->get_meta( '_featured_days' );
+                $featured_days = (int) $product_wc->get_meta( '_featured_days' );
                 $featured_days--;
 
                 $new_days = max(0, $featured_days);
-                $producto_wc->update_meta_data( '_featured_days', $new_days );
+                $product_wc->update_meta_data( '_featured_days', $new_days );
     
                 if ($new_days <= 0) {
-                    $producto_wc->set_featured( false );
+                    $product_wc->set_featured( false );
+                    $product_wc->delete_meta_data( '_featured_days' );
                 }
-                $producto_wc->save();
+                $product_wc->save();
             }
         }
     }
