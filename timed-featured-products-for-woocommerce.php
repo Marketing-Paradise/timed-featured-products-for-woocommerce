@@ -1,6 +1,6 @@
 <?php
 /*
- * Plugin Name: Timed featured products for Woocommerce
+ * Plugin Name: Timed featured products for WooCommerce
  * Description: Feature woocommerce products for a limited time.
  * Version: 1.0.0
  * Requires Plugins: woocommerce
