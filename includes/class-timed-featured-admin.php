@@ -299,8 +299,7 @@ class Timed_Featured_Admin {
         if ( $is_default ) {
             $days_text .= ' ' . __( '(by default)', 'timed-featured-products-for-woocommerce' );
         }
-        /* translators: %1$s: product title, %2$s: number of days the product is featured. */
-        $message = sprintf(
+        $message = sprintf(/* translators: %1$s: product title, %2$s: number of days the product is featured. */
             __( 'The product <strong>%1$s</strong> has been featured for %2$s.', 'timed-featured-products-for-woocommerce' ),
             esc_html( $product_name ),
             $days_text
@@ -311,8 +310,7 @@ class Timed_Featured_Admin {
 
     // Unfeatured notifications
     private function set_unfeatured_transient( $product_name ) {
-        /* translators: %1$s: product title */
-        $message = sprintf(
+        $message = sprintf(/* translators: %1$s: product title */
             __( 'The product <strong>%1$s</strong> is no longer featured.', 'timed-featured-products-for-woocommerce' ),
             esc_html( $product_name )
         );
