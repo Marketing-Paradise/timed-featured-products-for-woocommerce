@@ -1,0 +1,105 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Timed featured products for WooCommerce\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-13 13:47+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.8.2; wp-6.9.4; php-8.1.10\n"
+"X-Domain: timed-featured-products-for-woocommerce"
+
+#: includes/class-timed-featured-admin.php:303
+msgid "(by default)"
+msgstr ""
+
+#: includes/class-timed-featured-admin.php:300
+msgid "day"
+msgid_plural "days"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Description of the plugin
+msgid "Feature woocommerce products for a limited time."
+msgstr ""
+
+#: includes/class-timed-featured-admin.php:196
+msgid "Featured Days"
+msgstr ""
+
+#: includes/class-timed-featured-admin.php:174
+msgid "Featured days"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://mkparadise.com/"
+msgstr ""
+
+#. Author of the plugin
+msgid "Marketing Paradise"
+msgstr ""
+
+#: timed-featured-products-for-woocommerce.php:74
+msgid "Minimum order for WooCommerce:"
+msgstr ""
+
+#. Section ID
+#: includes/class-timed-featured-admin.php:144
+msgid "Options"
+msgstr ""
+
+#: includes/class-timed-featured-admin.php:177
+msgid ""
+"Priority rules:<br>1. <b>Empty - </b> The product is no longer featured.<br>"
+"2. <b>Number - </b>Override global settings: specific days for this product."
+msgstr ""
+
+#. %1$s: product title, %2$s: number of days the product is featured.
+#: includes/class-timed-featured-admin.php:306
+#, php-format
+msgid "The product <strong>%1$s</strong> has been featured for %2$s."
+msgstr ""
+
+#. %1$s: product title
+#: includes/class-timed-featured-admin.php:317
+#, php-format
+msgid "The product <strong>%1$s</strong> is no longer featured."
+msgstr ""
+
+#: includes/class-timed-featured-admin.php:166
+msgid "This is a global option. You can override it at product level."
+msgstr ""
+
+#: timed-featured-products-for-woocommerce.php:75
+msgid ""
+"This plugin requires WooCommerce to be installed and active in order to work."
+msgstr ""
+
+#: includes/class-timed-featured-admin.php:34
+msgid "This plugin requires WooCommerce."
+msgstr ""
+
+#: includes/class-timed-featured-admin.php:155
+msgid "Time (in days)"
+msgstr ""
+
+#. part of the error message ID id="setting-error-no-float"
+#: includes/class-timed-featured-admin.php:209
+msgid "Time is invalid"
+msgstr ""
+
+#: includes/class-timed-featured-admin.php:108
+#: includes/class-timed-featured-admin.php:109
+msgid "Timed featured products"
+msgstr ""
+
+#. Name of the plugin
+msgid "Timed featured products for WooCommerce"
+msgstr ""
