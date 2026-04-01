@@ -69,7 +69,7 @@ class Timed_Featured_Admin {
             // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Justified: Runs via WP-Cron in the background, not on frontend.
             'meta_query'     => array(
                 array(
-                    'key'     => '_featured_days',
+                    'key'     => '_timedfeatured_featured_days',
                     'value'   => 0,
                     'compare' => '>',
                     'type'    => 'NUMERIC'
@@ -84,15 +84,15 @@ class Timed_Featured_Admin {
                 $product_wc = wc_get_product( $product_id );
                 if ( ! $product_wc ) continue;
                 
-                $featured_days = (int) $product_wc->get_meta( '_featured_days' );
+                $featured_days = (int) $product_wc->get_meta( '_timedfeatured_featured_days' );
                 $featured_days--;
 
                 $new_days = max(0, $featured_days);
-                $product_wc->update_meta_data( '_featured_days', $new_days );
+                $product_wc->update_meta_data( '_timedfeatured_featured_days', $new_days );
     
                 if ($new_days <= 0) {
                     $product_wc->set_featured( false );
-                    $product_wc->delete_meta_data( '_featured_days' );
+                    $product_wc->delete_meta_data( '_timedfeatured_featured_days' );
                 }
                 $product_wc->save();
             }
@@ -168,9 +168,9 @@ class Timed_Featured_Admin {
 
     public function paint_product_field() {
         global $post;
-        $value = get_post_meta( $post->ID, '_featured_days', true );
+        $value = get_post_meta( $post->ID, '_timedfeatured_featured_days', true );
         $args = array(
-            'id'                => '_featured_days', // Meta key
+            'id'                => '_timedfeatured_featured_days', // Meta key
             'label'             => __( 'Featured days', 'timed-featured-products-for-woocommerce' ),
             'placeholder'       => '',
             'desc_tip'          => true,
@@ -221,12 +221,12 @@ class Timed_Featured_Admin {
 
         // Values post form
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce already verifies the nonce when saving the product.
-        $days_post  = isset( $_POST['_featured_days'] ) ? sanitize_text_field( wp_unslash( $_POST['_featured_days'] ) ) : '';
+        $days_post  = isset( $_POST['_timedfeatured_featured_days'] ) ? sanitize_text_field( wp_unslash( $_POST['_timedfeatured_featured_days'] ) ) : '';
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce already verifies the nonce when saving the product.
         $is_checked = isset( $_POST['_featured'] );
 
         // Values in DDBB
-        $current_meta_days = $product->get_meta( '_featured_days' );
+        $current_meta_days = $product->get_meta( '_timedfeatured_featured_days' );
         $had_days_assigned = ( '' !== $current_meta_days );
         
         // Variables for notifications
@@ -239,11 +239,11 @@ class Timed_Featured_Admin {
             $new_days = absint( $days_post );
 
             if ( ! $is_checked && $had_days_assigned && $new_days === absint( $current_meta_days ) ) {
-                $product->delete_meta_data( '_featured_days' );
+                $product->delete_meta_data( '_timedfeatured_featured_days' );
                 $product->set_featured( false );
                 $set_notice  = false;
             } else {
-                $product->update_meta_data( '_featured_days', $new_days );
+                $product->update_meta_data( '_timedfeatured_featured_days', $new_days );
                 $product->set_featured( true );
                 $notice_days = $new_days;
                 $set_notice  = true;
@@ -253,14 +253,14 @@ class Timed_Featured_Admin {
         else {
             if ( $is_checked && ! $had_days_assigned ) {
                 $global_default = get_option( 'timedfeatured_time', 7 );
-                $product->update_meta_data( '_featured_days', absint( $global_default ) );
+                $product->update_meta_data( '_timedfeatured_featured_days', absint( $global_default ) );
                 $product->set_featured( true );
                 $notice_days = absint( $global_default );
                 $is_default  = true;
                 $set_notice  = true;
 
             } else {
-                $product->delete_meta_data( '_featured_days' );
+                $product->delete_meta_data( '_timedfeatured_featured_days' );
                 $product->set_featured( false );
                 $set_notice  = false;
             }
@@ -286,11 +286,11 @@ class Timed_Featured_Admin {
         if ( $product->get_featured() ) {
             $global_default = get_option( 'timedfeatured_time', 7 );
             $days = absint( $global_default );
-            $product->update_meta_data( '_featured_days', $days );
+            $product->update_meta_data( '_timedfeatured_featured_days', $days );
         
             $this->set_featured_transient( $product->get_name(), $days, true ); // Transient for ajax notifications
         } else {
-            $product->delete_meta_data( '_featured_days' );
+            $product->delete_meta_data( '_timedfeatured_featured_days' );
             $this->set_unfeatured_transient( $product->get_name() );
         }
     }
@@ -338,7 +338,7 @@ class Timed_Featured_Admin {
 
     public function render_days_column_content( $column, $post_id ) {
         if ( 'timedfeatured_featured_days' === $column ) {
-            $days = get_post_meta( $post_id, '_featured_days', true );
+            $days = get_post_meta( $post_id, '_timedfeatured_featured_days', true );
 
             if ( '' === $days ) {
                 echo '<span class="na">&ndash;</span>';
