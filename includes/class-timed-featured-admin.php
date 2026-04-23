@@ -23,6 +23,7 @@ class Timed_Featured_Admin {
         add_filter( 'manage_edit-product_columns', array( $this, 'paint_days_column' ) ); // Add featured days column
         add_action( 'manage_product_posts_custom_column', array( $this, 'render_days_column_content' ), 10, 2 ); // Render value in featured days column
         add_action( 'admin_notices', array( $this, 'display_featured_notice' ) ); // Notifications in backend
+        add_filter( "plugin_action_links_" . $plugin_basename, array ($this, 'add_plugin_action_link') ); // Add action links in plugin
     }
 
     /**
@@ -346,5 +347,17 @@ class Timed_Featured_Admin {
                 echo esc_html( $days );
             }
         }
+    }
+
+    /**
+    * Add action links in plugin
+    */
+    public function add_plugin_action_link( $links ) {
+
+    $settings_link = '<a href="' . admin_url( 'admin.php?page=mkp-timed-featured-options' ) . '">' . __( 'Settings', 'timed-featured-products-for-woocommerce' ) . '</a>'; // Setting page link
+    array_unshift( $links, $settings_link );
+    
+    return $links;
+
     }
 }
