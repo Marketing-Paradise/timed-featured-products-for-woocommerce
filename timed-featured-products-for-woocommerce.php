@@ -71,7 +71,7 @@ function timedfeatured_warning_woocommerce() {
     ?>
     <div class="notice notice-error is-dismissible">
         <p>
-            <strong><?php esc_html_e( 'Minimum order for WooCommerce:', 'timed-featured-products-for-woocommerce' ); ?></strong>
+            <strong><?php esc_html_e( 'Timed featured products for WooCommerce:', 'timed-featured-products-for-woocommerce' ); ?></strong>
             <?php esc_html_e( 'This plugin requires WooCommerce to be installed and active in order to work.', 'timed-featured-products-for-woocommerce' ); ?>
         </p>
     </div>
