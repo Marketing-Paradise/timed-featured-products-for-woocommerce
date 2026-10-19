@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Timed featured products for WooCommerce
  * Description: Feature woocommerce products for a limited time.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Requires Plugins: woocommerce
  * Author: Marketing Paradise
  * Author URI: https://mkparadise.com/
